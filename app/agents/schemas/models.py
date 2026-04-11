@@ -8,3 +8,8 @@ class Fact(BaseModel):
 
 class FactExtraction(BaseModel):
     facts: List[Fact]
+
+class FactAnalysis(BaseModel):
+    claim: str
+    verdict: Literal['True','False','Unverified','Partially True']
+    explanation: str

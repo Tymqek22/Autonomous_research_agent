@@ -21,7 +21,7 @@ async def extraction_node(state: AgentState):
             model="llama3.1",
             response_model=FactExtraction,
             messages= [
-                {"role": "system", "content": "Exctacts facts from the text. Fetch only facts related with dates, statistics, people and events."},
+                {"role": "system", "content": "Exctact maximum 5 facts from the text. Fetch only facts related with dates, statistics, people and events."},
                 {"role": "user", "content": text}
             ]
         )
