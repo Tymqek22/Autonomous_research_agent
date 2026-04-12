@@ -1,14 +1,6 @@
-import instructor
-from openai import OpenAI
 from app.agents.schemas.models import FactExtraction
 from app.agents.state import AgentState
-
-client = instructor.from_openai(
-    OpenAI(
-        base_url="http://localhost:11434/v1",
-        api_key="ollama"),
-        mode=instructor.Mode.JSON
-)
+from app.agents.llm_factory import llm_factory
 
 async def extraction_node(state: AgentState):
     text = state.get("article_text","")
@@ -17,16 +9,16 @@ async def extraction_node(state: AgentState):
         return {"error": "No text to analize."}
     
     try:
-        response = client.chat.completions.create(
-            model="llama3.1",
-            response_model=FactExtraction,
-            messages= [
-                {"role": "system", "content": "Exctact maximum 5 facts from the text. Fetch only facts related with dates, statistics, people and events."},
-                {"role": "user", "content": text}
-            ]
-        )
+        llm = llm_factory.get_llm(structured_output=FactExtraction)
+
+        prompt = f'''
+            Extract maximum 5 facts from the article text. Fetch facts related with dates, statistics, people and events.
+            Every fact should have a context based on this article. You can't extract raw date, number or person.\n\n
+            Text: {text}
+        '''
+
+        response = await llm.ainvoke(prompt)
 
         return {"facts": response.facts}
     except Exception as ex:
-        print(f"DEBUG Error in extraction_node: {ex}")
         return {"error": f"Extraction failed: {str(ex)}"}

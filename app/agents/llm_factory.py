@@ -1,7 +1,7 @@
 import os
 from enum import Enum
 from dotenv import load_dotenv
-from langchain_openai import OpenAI
+from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 from typing import Optional, Type, Any
 
@@ -22,13 +22,14 @@ class LLMFactory:
             temperature: float = 0,
             structured_output: Optional[Type[BaseModel]] = None
             ) -> Any:
-        llm = OpenAI(
+        llm = ChatOpenAI(
             model=model.value,
             temperature=temperature,
+            api_key=self.api_key
         )
 
         if structured_output:
-            llm = llm.with_structured_output(structured_output)
+            return llm.with_structured_output(structured_output)
 
         return llm
     
