@@ -12,4 +12,7 @@ class FactExtraction(BaseModel):
 class FactAnalysis(BaseModel):
     claim: str
     verdict: Literal['True','False','Unverified','Partially True']
+
+class FinalVerdict(BaseModel):
+    verdict: Literal['True','False','Unverified','Partially True']
     explanation: str

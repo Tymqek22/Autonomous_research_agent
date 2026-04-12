@@ -1,9 +1,13 @@
 import httpx
 from bs4 import BeautifulSoup
-from langchain.tools import tool
+from app.agents.state import AgentState
 
-@tool('web_scraper')
-async def scrape_article(url: str):
+async def scraping_node(state: AgentState):
+    url = state.get("url","")
+
+    if not url:
+        return {"error": "Url was not specified."}
+
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
 
@@ -14,4 +18,6 @@ async def scrape_article(url: str):
     for tag in soup(ignored_tags):
         tag.decompose()
     
-    return soup.get_text(separator=" ",strip=True)
+    article_text = soup.get_text(separator=" ",strip=True)
+
+    return {"article_text": article_text}

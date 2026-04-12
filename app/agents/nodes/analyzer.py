@@ -21,7 +21,6 @@ async def verify_single_fact(fact: Fact) -> FactAnalysis:
 
     return analysis
 
-
 async def analysis_node(state: AgentState):
     facts = state.get("facts","")
 
