@@ -5,7 +5,7 @@ from app.agents.state import AgentState
 
 client = instructor.from_openai(
     OpenAI(
-        base_url="http://localhost:11434",
+        base_url="http://localhost:11434/v1",
         api_key="ollama"),
         mode=instructor.Mode.JSON
 )
@@ -28,4 +28,5 @@ async def extraction_node(state: AgentState):
 
         return {"facts": response.facts}
     except Exception as ex:
+        print(f"DEBUG Error in extraction_node: {ex}")
         return {"error": f"Extraction failed: {str(ex)}"}

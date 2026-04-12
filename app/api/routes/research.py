@@ -1,9 +1,20 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.schemas.request import ResearchRequest
-from app.schemas.response import ResearchResponse
+from app.agents.researcher import app_graph
 
 router = APIRouter()
 
-@router.get("/research",response_model=ResearchResponse)
-def process_research():
-    return ResearchResponse(summary="Basic flow implemented")
+@router.post("/analyze-article")
+async def analyze_article(request: ResearchRequest):
+    agent_input = {"url": str(request.url)}
+
+    try:
+        final_state = await app_graph.ainvoke(agent_input)
+
+        return {
+            "status": "completed",
+            "verdict": final_state.get("final_verdict")
+        }
+
+    except Exception as ex:
+        raise HTTPException(status_code=500,detail=f"Error during the research: {str(ex)}")

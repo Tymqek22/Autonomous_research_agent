@@ -1,11 +1,11 @@
 import asyncio
 import instructor
-from openai import OpenAI
+from openai import AsyncOpenAI
 from app.agents.tools.search import web_search
 from app.agents.state import AgentState
 from app.agents.schemas.models import Fact, FactAnalysis
 
-client = instructor.patch(OpenAI(base_url="http://localhost:11434",api_key="ollama"))
+client = instructor.from_openai(AsyncOpenAI(base_url="http://localhost:11434/v1",api_key="ollama"))
 
 async def verify_single_fact(fact: Fact) -> FactAnalysis:
     evidence = await web_search(fact.claim)
@@ -22,7 +22,7 @@ async def verify_single_fact(fact: Fact) -> FactAnalysis:
     return analysis
 
 async def analysis_node(state: AgentState):
-    facts = state.get("facts","")
+    facts = state.get("facts",[])
 
     if not facts:
         return {"analysis_results": [], "error": "No facts to be analyzed."}

@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from app.agents.state import AgentState
 
 async def scraping_node(state: AgentState):
+    breakpoint()
     url = state.get("url","")
 
     if not url:
@@ -11,7 +12,7 @@ async def scraping_node(state: AgentState):
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
 
-    soup = BeautifulSoup(response.text,'http.parser')
+    soup = BeautifulSoup(response.text,"html.parser")
 
     ignored_tags = ['header','footer','nav','aside','script','style','noscript','form']
 
