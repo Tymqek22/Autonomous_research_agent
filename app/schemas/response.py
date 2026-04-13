@@ -1,4 +1,6 @@
 from pydantic import BaseModel
 
 class ResearchResponse(BaseModel):
-    summary: str
+    status: str
+    verdict: str
+    explanation: str
