@@ -1,16 +1,17 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.request import ResearchRequest
-from app.agents.researcher import app_graph
+from app.agents.researcher import ResearcherAgent
+from app.agents.llm_factory import LLMFactory
 
 router = APIRouter()
+llm_factory = LLMFactory()
+agent = ResearcherAgent(llm_factory)
 
 @router.post("/analyze-article")
 async def analyze_article(request: ResearchRequest):
-    agent_input = {"url": str(request.url)}
-
     try:
-        final_state = await app_graph.ainvoke(agent_input)
-
+        final_state = await agent.run(request.url)
+        
         return {
             "status": "completed",
             "verdict": final_state.get("final_verdict")

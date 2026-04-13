@@ -1,9 +1,9 @@
 import json
 from app.agents.schemas.models import FinalVerdict
 from app.agents.state import AgentState
-from app.agents.llm_factory import llm_factory
+from app.agents.llm_factory import LLMFactory
 
-async def evaluation_node(state: AgentState):
+async def evaluation_node(state: AgentState,llm_factory: LLMFactory):
     analysis_results = state.get("analysis_results","")
 
     if not analysis_results:

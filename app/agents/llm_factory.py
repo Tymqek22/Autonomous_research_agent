@@ -32,5 +32,3 @@ class LLMFactory:
             return llm.with_structured_output(structured_output)
 
         return llm
-    
-llm_factory = LLMFactory()

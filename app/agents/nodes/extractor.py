@@ -1,8 +1,8 @@
 from app.agents.schemas.models import FactExtraction
 from app.agents.state import AgentState
-from app.agents.llm_factory import llm_factory
+from app.agents.llm_factory import LLMFactory
 
-async def extraction_node(state: AgentState):
+async def extraction_node(state: AgentState,llm_factory: LLMFactory):
     text = state.get("article_text","")
 
     if not text:

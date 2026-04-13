@@ -2,10 +2,10 @@ import asyncio
 from app.agents.tools.search import web_search
 from app.agents.state import AgentState
 from app.agents.schemas.models import Fact, FactAnalysis
-from app.agents.llm_factory import llm_factory
+from app.agents.llm_factory import LLMFactory
 
 
-async def verify_single_fact(fact: Fact) -> FactAnalysis:
+async def verify_single_fact(fact: Fact,llm_factory: LLMFactory) -> FactAnalysis:
     evidence = await web_search(fact.claim)
 
     llm = llm_factory.get_llm(structured_output=FactAnalysis)
@@ -20,7 +20,7 @@ async def verify_single_fact(fact: Fact) -> FactAnalysis:
 
     return analysis
 
-async def analysis_node(state: AgentState):
+async def analysis_node(state: AgentState,llm_factory: LLMFactory):
     facts = state.get("facts",[])
 
     if not facts:
@@ -28,7 +28,7 @@ async def analysis_node(state: AgentState):
     
     tasks = []
     for fact in facts:
-        tasks.append(verify_single_fact(fact))
+        tasks.append(verify_single_fact(fact,llm_factory))
 
     try:
         analysis_results = await asyncio.gather(*tasks)
