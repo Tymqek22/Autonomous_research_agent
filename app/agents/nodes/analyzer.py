@@ -30,6 +30,9 @@ async def analysis_node(state: AgentState):
     for fact in facts:
         tasks.append(verify_single_fact(fact))
 
-    analysis_results = await asyncio.gather(*tasks)
+    try:
+        analysis_results = await asyncio.gather(*tasks)
 
-    return {"analysis_results": analysis_results}
+        return {"analysis_results": analysis_results}
+    except Exception as ex:
+        return {"error": f"Analysis failed: {str(ex)}"}

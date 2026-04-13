@@ -14,16 +14,19 @@ async def evaluation_node(state: AgentState):
         indent=2
     )
 
-    llm = llm_factory.get_llm(structured_output=FinalVerdict)
+    try:
+        llm = llm_factory.get_llm(structured_output=FinalVerdict)
 
-    prompt = f'''
-            You are a final judge who needs to make a verdict about the article reliability based on already analyzed facts.
-            Focus on concise explanation.
-            The formatted analysis results are here:\n
-            {analysis_results_formatted}\n\n
-            Return the final verdict and appropriate explanation in JSON format.
-        '''
+        prompt = f'''
+                You are a final judge who needs to make a verdict about the article reliability based on already analyzed facts.
+                Focus on concise explanation.
+                The formatted analysis results are here:\n
+                {analysis_results_formatted}\n\n
+                Return the final verdict and appropriate explanation in JSON format.
+            '''
 
-    result = await llm.ainvoke(prompt)
+        result = await llm.ainvoke(prompt)
 
-    return {"final_verdict": result}
+        return {"final_verdict": result}
+    except Exception as ex:
+        return {"error": f"Final evaluation failed: {str(ex)}"}

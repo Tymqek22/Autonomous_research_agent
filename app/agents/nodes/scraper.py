@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from app.agents.state import AgentState
 
 async def scraping_node(state: AgentState):
-    breakpoint()
     url = state.get("url","")
 
     if not url:
