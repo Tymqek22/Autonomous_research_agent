@@ -1,4 +1,5 @@
 from functools import partial
+from langgraph.checkpoint.redis import RedisSaver
 from langgraph.graph import StateGraph, END
 from app.agents.nodes.analyzer import analysis_node
 from app.agents.nodes.extractor import extraction_node
@@ -10,9 +11,9 @@ from app.agents.llm_factory import LLMFactory
 class ResearcherAgent:
     def __init__(self,llm_factory: LLMFactory):
         self.llm_factory = llm_factory
-        self._graph = self._build_graph()
+        self._graph = self._graph_builder()
 
-    def _build_graph(self):
+    def _graph_builder(self):
         workflow = StateGraph(AgentState)
         workflow.add_node("scraping_node",scraping_node)
         workflow.add_node("extraction_node",partial(extraction_node,llm_factory=self.llm_factory))
@@ -24,9 +25,10 @@ class ResearcherAgent:
         workflow.add_edge("extraction_node","analysis_node")
         workflow.add_edge("analysis_node","evaluation_node")
         workflow.add_edge("evaluation_node",END)
-        
+
         return workflow.compile()
     
     async def run(self,url: str):
         agent_input = {"url": url}
+
         return await self._graph.ainvoke(agent_input)

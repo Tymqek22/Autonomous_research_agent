@@ -3,8 +3,10 @@ from app.agents.schemas.models import FinalVerdict
 from app.agents.state import AgentState
 from app.agents.llm_factory import LLMFactory
 
-async def evaluation_node(state: AgentState,llm_factory: LLMFactory):
+def evaluation_node(state: AgentState,llm_factory: LLMFactory):
     analysis_results = state.get("analysis_results","")
+    print(f"[EVALUATION] analysis_results received: {len(analysis_results)}")
+    print(f"[EVALUATION] content: {analysis_results}")
 
     if not analysis_results:
         return {"error": "No results to evaluate."}
@@ -25,7 +27,7 @@ async def evaluation_node(state: AgentState,llm_factory: LLMFactory):
                 Return the final verdict and appropriate explanation in JSON format.
             '''
 
-        result = await llm.ainvoke(prompt)
+        result = llm.invoke(prompt)
 
         return {"final_verdict": result}
     except Exception as ex:

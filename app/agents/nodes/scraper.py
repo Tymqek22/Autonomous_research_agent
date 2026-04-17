@@ -2,14 +2,14 @@ import httpx
 from bs4 import BeautifulSoup
 from app.agents.state import AgentState
 
-async def scraping_node(state: AgentState):
+def scraping_node(state: AgentState):
     url = state.get("url","")
 
     if not url:
         return {"error": "Url was not specified."}
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
+    with httpx.Client() as client:
+        response = client.get(url)
 
     soup = BeautifulSoup(response.text,"html.parser")
 

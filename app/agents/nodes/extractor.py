@@ -2,7 +2,7 @@ from app.agents.schemas.models import FactExtraction
 from app.agents.state import AgentState
 from app.agents.llm_factory import LLMFactory
 
-async def extraction_node(state: AgentState,llm_factory: LLMFactory):
+def extraction_node(state: AgentState,llm_factory: LLMFactory):
     text = state.get("article_text","")
 
     if not text:
@@ -17,7 +17,7 @@ async def extraction_node(state: AgentState,llm_factory: LLMFactory):
             Text: {text}
         '''
 
-        response = await llm.ainvoke(prompt)
+        response = llm.invoke(prompt)
 
         return {"facts": response.facts}
     except Exception as ex:

@@ -1,23 +1,28 @@
-from fastapi import APIRouter, Depends, HTTPException
+from uuid import uuid4
+from celery.result import AsyncResult
+from app.core.celery_app import celery
+from fastapi import APIRouter
 from app.schemas.request import ResearchRequest
-from app.schemas.response import ResearchResponse
-from app.agents.researcher import ResearcherAgent
-from app.api.dependencies import get_researcher_agent
+from app.tasks.agent_tasks import process_agent_request
 
 router = APIRouter()
 
 @router.post("/analyze-article")
-async def analyze_article(
-    request: ResearchRequest,
-    agent: ResearcherAgent = Depends(get_researcher_agent)
-):
-    try:
-        final_state = await agent.run(request.url)
+async def analyze_article(request: ResearchRequest):
+    task = process_agent_request.delay(request.url)
+    
+    return {
+        "taskId": task.id,
+        "status": "processing"
+    }
+    
+@router.get("/tasks/{task_id}")
+async def get_task_status(task_id: str):
+    task_result = AsyncResult(task_id, app=celery)
 
-        return ResearchResponse(
-            status="completed",
-            verdict=final_state['final_verdict'].verdict,
-            explanation=final_state['final_verdict'].explanation)
-
-    except Exception as ex:
-        raise HTTPException(status_code=500,detail=f"Error during the research: {str(ex)}")
+    result = {
+        "taskId": task_id,
+        "status": task_result.status,
+        "result": task_result.result if task_result.ready() else None
+    }
+    return result
