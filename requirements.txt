@@ -1,0 +1,13 @@
+bs4==0.0.2
+celery==5.6.3
+ddgs==9.14.0
+debugpy==1.8.20
+dotenv==0.9.9
+duckduckgo_search==8.1.1
+fastapi==0.136.0
+langchain-community==0.4.1
+langchain-openai==1.1.14
+langgraph==1.1.6
+langgraph-checkpoint-redis==0.4.1
+pip==24.0
+uvicorn==0.44.0
